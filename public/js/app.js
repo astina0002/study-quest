@@ -112,8 +112,9 @@ function renderRewards() {
     const isBig = reward.day_number >= 5;
     const isRobux = reward.reward_type === 'robux';
     const unit = isRobux ? 'Robux' : '円';
+    const robuxImage = reward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg';
     const rewardImg = isRobux
-      ? '<img src="/images/robux.png" alt="Robux" class="reward-image" onerror="this.style.display=\'none\'">'
+      ? `<img src="${robuxImage}" alt="Robux" class="reward-image" onerror="this.style.display='none'">`
       : '<div class="reward-cash-icon">&#x1F4B0;</div>';
 
     card.innerHTML = `
