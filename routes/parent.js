@@ -280,12 +280,17 @@ router.put('/goals', (req, res) => {
 
 // PUT /api/parent/password - Change parent password
 router.put('/password', (req, res) => {
+  const crypto = require('crypto');
   const db = getDb();
   try {
     const { password } = req.body;
     if (!password) return res.status(400).json({ error: 'password is required' });
 
-    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('parent_password', ?)").run(password);
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+    const hashed = salt + ':' + hash;
+
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('parent_password', ?)").run(hashed);
     res.json({ success: true });
   } finally {
     db.close();

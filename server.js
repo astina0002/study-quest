@@ -58,6 +58,21 @@ function isParentAuthed(req) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Password hashing helpers
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return salt + ':' + hash;
+}
+
+function verifyPassword(password, stored) {
+  // Support plain text (migration from old format)
+  if (!stored.includes(':')) return password === stored;
+  const [salt, hash] = stored.split(':');
+  const test = crypto.scryptSync(password, salt, 64).toString('hex');
+  return hash === test;
+}
+
 // Auth routes
 app.post('/api/auth/login', (req, res) => {
   const { password } = req.body;
@@ -66,7 +81,12 @@ app.post('/api/auth/login', (req, res) => {
     const setting = db.prepare("SELECT value FROM settings WHERE key = 'parent_password'").get();
     const stored = setting ? setting.value : '1234';
 
-    if (password === stored) {
+    if (verifyPassword(password, stored)) {
+      // Migrate plain text to hash on successful login
+      if (!stored.includes(':')) {
+        const hashed = hashPassword(password);
+        db.prepare("UPDATE settings SET value = ? WHERE key = 'parent_password'").run(hashed);
+      }
       const token = createToken(Date.now());
       res.setHeader('Set-Cookie', `parent_token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`);
       res.json({ success: true });
