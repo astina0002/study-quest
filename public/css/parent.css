@@ -253,6 +253,64 @@
   color: var(--primary);
 }
 
+/* Daily Goals */
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.goal-row:last-child {
+  border-bottom: none;
+}
+
+.goal-today {
+  background: #faf5ff;
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.goal-day-label {
+  min-width: 28px;
+  font-weight: bold;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.goal-day-label.today {
+  color: var(--primary);
+}
+
+.goal-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.goal-input.goal-saved {
+  border-color: var(--success) !important;
+}
+
+.goal-save-btn {
+  padding: 8px 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 /* Parent Wishlist */
 .parent-wishlist {
   display: flex;

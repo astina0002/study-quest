@@ -30,6 +30,11 @@ function initDb() {
       reward_description TEXT DEFAULT ''
     );
 
+    CREATE TABLE IF NOT EXISTS daily_goals (
+      date TEXT PRIMARY KEY,
+      description TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS wishlist (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       description TEXT NOT NULL,

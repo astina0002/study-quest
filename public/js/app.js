@@ -77,6 +77,15 @@ function renderWeek() {
     container.appendChild(card);
   }
 
+  // Today's goal
+  const goalEl = document.getElementById('todayGoal');
+  if (weekData.todayGoal) {
+    goalEl.innerHTML = `<div class="goal-icon">&#x1F4DA;</div><div class="goal-text">${escapeHtml(weekData.todayGoal)}</div>`;
+    goalEl.classList.remove('hidden');
+  } else {
+    goalEl.classList.add('hidden');
+  }
+
   // Today's action
   const todayAction = document.getElementById('todayAction');
   const waitingParent = document.getElementById('waitingParent');

@@ -188,6 +188,31 @@ body {
   font-size: 20px;
 }
 
+/* Today's Goal */
+.today-goal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+}
+
+.goal-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.goal-text {
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* Today Action */
 .today-action {
   text-align: center;

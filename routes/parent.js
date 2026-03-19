@@ -220,6 +220,64 @@ router.put('/child-name', (req, res) => {
   }
 });
 
+// GET /api/parent/goals - Get this week's goals
+router.get('/goals', (req, res) => {
+  const db = getDb();
+  try {
+    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const day = now.getUTCDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setUTCDate(monday.getUTCDate() + diff);
+
+    const weekDates = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(monday);
+      d.setDate(d.getDate() + i);
+      weekDates.push(d.toISOString().split('T')[0]);
+    }
+
+    const placeholders = weekDates.map(() => '?').join(',');
+    const goals = db.prepare(`SELECT * FROM daily_goals WHERE date IN (${placeholders})`).all(...weekDates);
+    const goalMap = {};
+    for (const g of goals) goalMap[g.date] = g.description;
+
+    const dayNames = ['月', '火', '水', '木', '金', '土'];
+    const today = now.toISOString().split('T')[0];
+    const result = weekDates.map((date, i) => ({
+      date,
+      dayName: dayNames[i],
+      isToday: date === today,
+      goal: goalMap[date] || '',
+    }));
+
+    res.json({ goals: result });
+  } finally {
+    db.close();
+  }
+});
+
+// PUT /api/parent/goals - Set a day's goal
+router.put('/goals', (req, res) => {
+  const db = getDb();
+  try {
+    const { date, description } = req.body;
+    if (!date) return res.status(400).json({ error: 'date is required' });
+
+    if (description && description.trim()) {
+      db.prepare(
+        'INSERT INTO daily_goals (date, description) VALUES (?, ?) ON CONFLICT(date) DO UPDATE SET description = ?'
+      ).run(date, description.trim(), description.trim());
+    } else {
+      db.prepare('DELETE FROM daily_goals WHERE date = ?').run(date);
+    }
+
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
 // PUT /api/parent/password - Change parent password
 router.put('/password', (req, res) => {
   const db = getDb();

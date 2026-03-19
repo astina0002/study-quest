@@ -1,11 +1,11 @@
 async function loadParentData() {
   try {
-    const [weekRes, monthlyRes] = await Promise.all([
+    const [weekRes, monthlyRes, goalsRes] = await Promise.all([
       fetch('/api/parent/week'),
       fetch('/api/parent/monthly'),
+      fetch('/api/parent/goals'),
     ]);
 
-    // Session expired check
     if (weekRes.status === 401 || monthlyRes.status === 401) {
       window.location.href = '/parent';
       return;
@@ -13,7 +13,9 @@ async function loadParentData() {
 
     const weekData = await weekRes.json();
     const monthlyData = await monthlyRes.json();
+    const goalsData = await goalsRes.json();
 
+    renderDailyGoals(goalsData.goals);
     renderParentWeek(weekData);
     renderRewardConfig(weekData.rewards);
     renderMonthlyConfig(monthlyData);
@@ -22,6 +24,38 @@ async function loadParentData() {
     document.getElementById('childNameInput').value = weekData.childName || '';
   } catch (err) {
     console.error('Failed to load parent data:', err);
+  }
+}
+
+function renderDailyGoals(goals) {
+  const container = document.getElementById('dailyGoals');
+  container.innerHTML = '';
+
+  for (const g of goals) {
+    const row = document.createElement('div');
+    row.className = 'goal-row' + (g.isToday ? ' goal-today' : '');
+    row.innerHTML = `
+      <span class="goal-day-label ${g.isToday ? 'today' : ''}">${g.dayName}</span>
+      <input type="text" class="goal-input" id="goal_${g.date}" value="${escapeHtml(g.goal)}"
+             placeholder="例: ドリル5ページ、漢字プリント1枚">
+      <button class="goal-save-btn" onclick="saveGoal('${g.date}')">保存</button>
+    `;
+    container.appendChild(row);
+  }
+}
+
+async function saveGoal(date) {
+  const input = document.getElementById(`goal_${date}`);
+  try {
+    await fetch('/api/parent/goals', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, description: input.value }),
+    });
+    input.classList.add('goal-saved');
+    setTimeout(() => input.classList.remove('goal-saved'), 1000);
+  } catch (err) {
+    alert('保存に失敗しました');
   }
 }
 

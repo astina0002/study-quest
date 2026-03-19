@@ -80,12 +80,16 @@ router.get('/week', (req, res) => {
     // Count cleared days this week
     const clearedCount = week.filter((d) => d.cleared).length;
 
+    // Today's goal
+    const todayGoal = db.prepare('SELECT description FROM daily_goals WHERE date = ?').get(today);
+
     res.json({
       today,
       dayOfWeek,
       isSunday: dayOfWeek === 7,
       questName,
       childName,
+      todayGoal: todayGoal ? todayGoal.description : '',
       week,
       rewards,
       clearedCount,
