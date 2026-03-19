@@ -272,6 +272,84 @@ body {
   font-weight: bold;
 }
 
+/* Current Reward */
+.current-reward-section {
+  margin-bottom: 20px;
+}
+
+.current-reward-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+}
+
+.current-reward-badge {
+  font-size: 16px;
+  font-weight: bold;
+  color: #92400e;
+  margin-bottom: 12px;
+}
+
+.current-reward-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.current-reward-body .reward-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.current-reward-body .reward-cash-icon,
+.current-reward-body .reward-item-icon {
+  font-size: 48px;
+}
+
+.current-reward-amount {
+  font-size: 32px;
+  font-weight: bold;
+  color: #92400e;
+}
+
+.current-reward-unit {
+  font-size: 16px;
+  color: #a16207;
+  font-weight: bold;
+}
+
+/* Next Target */
+.next-target-section {
+  margin-bottom: 20px;
+}
+
+.next-target-card {
+  background: var(--bg-card);
+  border: 2px dashed var(--primary);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+}
+
+.next-target-label {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.next-target-reward {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
 /* Rewards Section */
 .rewards-section {
   margin-bottom: 32px;
@@ -285,50 +363,49 @@ body {
 
 .reward-track {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
 }
 
 .reward-card {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 10px 6px;
   text-align: center;
   border: 2px solid var(--bg-card-light);
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
 }
 
-.reward-card.unlocked {
-  border-color: var(--accent);
-  background: #fffbeb;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+.reward-card.earned {
+  border-color: var(--success);
+  background: #ecfdf5;
+}
+
+.reward-card.next {
+  border-color: var(--primary);
+  border-style: dashed;
+  background: #faf5ff;
 }
 
 .reward-card.locked {
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 .reward-day {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
-.reward-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
+.reward-status {
+  font-size: 20px;
+  margin-bottom: 4px;
 }
 
-.reward-amount {
-  font-size: 18px;
+.reward-amount-sm {
+  font-size: 13px;
   font-weight: bold;
-  color: var(--accent);
-}
-
-.reward-amount.big {
-  font-size: 24px;
-  color: var(--accent-dark);
+  color: var(--text);
 }
 
 .reward-image {
@@ -339,9 +416,9 @@ body {
 }
 
 .reward-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-dim);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* Monthly Section */
@@ -567,8 +644,13 @@ body {
     font-size: 24px;
   }
 
-  .reward-track {
-    grid-template-columns: repeat(6, 1fr);
+  .current-reward-body .reward-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .current-reward-amount {
+    font-size: 40px;
   }
 
   .complete-btn {

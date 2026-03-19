@@ -106,8 +106,72 @@ function renderWeek() {
   }
 }
 
+function getRewardDisplay(reward) {
+  const rType = reward.reward_type || 'cash';
+  if (rType === 'robux') {
+    const robuxImage = reward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg';
+    return {
+      img: `<img src="${robuxImage}" alt="Robux" class="reward-image" onerror="this.style.display='none'">`,
+      amount: reward.reward_amount.toLocaleString(),
+      unit: 'Robux',
+    };
+  } else if (rType === 'item') {
+    return {
+      img: '<div class="reward-item-icon">&#x1F381;</div>',
+      amount: '',
+      unit: reward.reward_description || 'アイテム',
+    };
+  } else {
+    return {
+      img: '<div class="reward-cash-icon">&#x1F4B0;</div>',
+      amount: reward.reward_amount.toLocaleString(),
+      unit: '円',
+    };
+  }
+}
+
 function renderRewards() {
   const { rewards, clearedCount } = weekData;
+
+  // Current reward (highest unlocked)
+  const currentSection = document.getElementById('currentRewardSection');
+  const currentEl = document.getElementById('currentReward');
+  const nextSection = document.getElementById('nextTargetSection');
+  const nextEl = document.getElementById('nextTarget');
+
+  const currentReward = rewards.filter(r => clearedCount >= r.day_number).pop();
+  const nextReward = rewards.find(r => clearedCount < r.day_number);
+
+  if (currentReward) {
+    const d = getRewardDisplay(currentReward);
+    currentSection.classList.remove('hidden');
+    currentEl.innerHTML = `
+      <div class="current-reward-badge">&#x2728; ${currentReward.day_number}日達成！</div>
+      <div class="current-reward-body">
+        ${d.img}
+        <div class="current-reward-info">
+          ${d.amount ? `<div class="current-reward-amount">${d.amount}</div>` : ''}
+          <div class="current-reward-unit">${d.unit}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    currentSection.classList.add('hidden');
+  }
+
+  if (nextReward) {
+    const d = getRewardDisplay(nextReward);
+    const remaining = nextReward.day_number - clearedCount;
+    nextSection.classList.remove('hidden');
+    nextEl.innerHTML = `
+      <span class="next-target-label">&#x1F3AF; 次の報酬まであと <strong>${remaining}日</strong></span>
+      <span class="next-target-reward">${d.amount ? d.amount + ' ' : ''}${d.unit}</span>
+    `;
+  } else {
+    nextSection.classList.add('hidden');
+  }
+
+  // Full reward track
   const track = document.getElementById('rewardTrack');
   track.innerHTML = '';
 
@@ -116,33 +180,16 @@ function renderRewards() {
     card.className = 'reward-card';
 
     const unlocked = clearedCount >= reward.day_number;
-    card.classList.add(unlocked ? 'unlocked' : 'locked');
+    const isNext = nextReward && reward.day_number === nextReward.day_number;
+    card.classList.add(unlocked ? 'earned' : isNext ? 'next' : 'locked');
 
-    const isBig = reward.day_number >= 5;
-    const rType = reward.reward_type || 'cash';
-    let rewardImg, amountText, unitText;
-
-    if (rType === 'robux') {
-      const robuxImage = reward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg';
-      rewardImg = `<img src="${robuxImage}" alt="Robux" class="reward-image" onerror="this.style.display='none'">`;
-      amountText = reward.reward_amount.toLocaleString();
-      unitText = 'Robux';
-    } else if (rType === 'item') {
-      rewardImg = '<div class="reward-item-icon">&#x1F381;</div>';
-      amountText = '';
-      unitText = reward.reward_description || 'アイテム';
-    } else {
-      rewardImg = '<div class="reward-cash-icon">&#x1F4B0;</div>';
-      amountText = reward.reward_amount.toLocaleString();
-      unitText = '円';
-    }
+    const d = getRewardDisplay(reward);
 
     card.innerHTML = `
       <div class="reward-day">${reward.day_number}日達成</div>
-      <div class="reward-icon">${unlocked ? '&#x2728;' : '&#x1F512;'}</div>
-      ${rewardImg}
-      ${amountText ? `<div class="reward-amount ${isBig ? 'big' : ''}">${amountText}</div>` : ''}
-      <div class="reward-label">${unitText}</div>
+      <div class="reward-status">${unlocked ? '&#x2705;' : isNext ? '&#x1F3AF;' : '&#x1F512;'}</div>
+      ${d.amount ? `<div class="reward-amount-sm">${d.amount}</div>` : ''}
+      <div class="reward-label">${d.unit}</div>
     `;
     track.appendChild(card);
   }
