@@ -13,10 +13,17 @@ async function loadWeek() {
 }
 
 function renderWeek() {
-  const { week, clearedCount, isSunday, questName } = weekData;
+  const { week, clearedCount, isSunday, questName, childName } = weekData;
 
-  // Quest name
+  // Quest name & child name
   document.getElementById('questName').textContent = questName;
+  const childNameEl = document.getElementById('childName');
+  if (childName) {
+    childNameEl.textContent = childName + ' のクエストボード';
+    childNameEl.classList.remove('hidden');
+  } else {
+    childNameEl.classList.add('hidden');
+  }
 
   // Sunday check
   if (isSunday) {
@@ -103,14 +110,18 @@ function renderRewards() {
     card.classList.add(unlocked ? 'unlocked' : 'locked');
 
     const isBig = reward.day_number >= 5;
-    const robuxImg = '<img src="/images/robux.png" alt="Robux" class="reward-image" onerror="this.style.display=\'none\'">';
+    const isRobux = reward.reward_type === 'robux';
+    const unit = isRobux ? 'Robux' : '円';
+    const rewardImg = isRobux
+      ? '<img src="/images/robux.png" alt="Robux" class="reward-image" onerror="this.style.display=\'none\'">'
+      : '<div class="reward-cash-icon">&#x1F4B0;</div>';
 
     card.innerHTML = `
-      <div class="reward-day">${reward.day_number}日目</div>
+      <div class="reward-day">${reward.day_number}日達成</div>
       <div class="reward-icon">${unlocked ? '&#x1F381;' : '&#x1F512;'}</div>
-      ${robuxImg}
+      ${rewardImg}
       <div class="reward-amount ${isBig ? 'big' : ''}">${reward.reward_amount.toLocaleString()}</div>
-      <div class="reward-label">Robux</div>
+      <div class="reward-label">${unit}</div>
     `;
     track.appendChild(card);
   }

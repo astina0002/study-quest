@@ -26,6 +26,7 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS reward_config (
       day_number INTEGER PRIMARY KEY,
       reward_amount INTEGER NOT NULL,
+      reward_type TEXT DEFAULT 'cash',
       reward_description TEXT DEFAULT ''
     );
 
@@ -45,23 +46,33 @@ function initDb() {
 
   // Default reward config (days 1-6)
   const insert = db.prepare(
-    'INSERT OR IGNORE INTO reward_config (day_number, reward_amount, reward_description) VALUES (?, ?, ?)'
+    'INSERT OR IGNORE INTO reward_config (day_number, reward_amount, reward_type, reward_description) VALUES (?, ?, ?, ?)'
   );
   const defaults = [
-    [1, 100, '1日目クリア報酬'],
-    [2, 100, '2日目クリア報酬'],
-    [3, 200, '3日目クリア報酬'],
-    [4, 200, '4日目クリア報酬'],
-    [5, 800, '5日目クリア報酬'],
-    [6, 2000, '6日目クリア報酬'],
+    [1, 100, 'cash', '1日達成ボーナス'],
+    [2, 100, 'cash', '2日達成ボーナス'],
+    [3, 200, 'cash', '3日達成ボーナス'],
+    [4, 200, 'cash', '4日達成ボーナス'],
+    [5, 800, 'robux', '5日達成ボーナス'],
+    [6, 2000, 'robux', '6日達成ボーナス'],
   ];
   for (const row of defaults) {
     insert.run(...row);
   }
 
-  // Default quest name
+  // Migrate: add reward_type column if missing
+  const cols = db.prepare("PRAGMA table_info(reward_config)").all();
+  if (!cols.find(c => c.name === 'reward_type')) {
+    db.exec("ALTER TABLE reward_config ADD COLUMN reward_type TEXT DEFAULT 'cash'");
+    db.exec("UPDATE reward_config SET reward_type = 'robux' WHERE day_number >= 5");
+  }
+
+  // Default settings
   db.prepare(
     "INSERT OR IGNORE INTO settings (key, value) VALUES ('quest_name', '今日の勉強ミッション')"
+  ).run();
+  db.prepare(
+    "INSERT OR IGNORE INTO settings (key, value) VALUES ('child_name', '')"
   ).run();
 
   db.close();

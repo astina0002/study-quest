@@ -178,6 +178,15 @@
   font-size: 16px;
 }
 
+.reward-config-row select {
+  padding: 8px 12px;
+  border: 2px solid var(--bg-card-light);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
 .reward-config-row input[type="text"] {
   flex: 1;
   padding: 8px 12px;

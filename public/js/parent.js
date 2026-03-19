@@ -12,6 +12,7 @@ async function loadParentData() {
     renderMonthlyConfig(monthlyData);
 
     document.getElementById('questNameInput').value = weekData.questName;
+    document.getElementById('childNameInput').value = weekData.childName || '';
   } catch (err) {
     console.error('Failed to load parent data:', err);
   }
@@ -63,15 +64,18 @@ function renderRewardConfig(rewards) {
     const row = document.createElement('div');
     row.className = 'reward-config-row';
 
-    const isFixed = r.day_number >= 5;
+    const rewardType = r.reward_type || 'cash';
 
     row.innerHTML = `
-      <span class="reward-config-label">${r.day_number}日目</span>
+      <span class="reward-config-label">${r.day_number}日達成</span>
       <input type="number" id="reward_amount_${r.day_number}" value="${r.reward_amount}"
-             ${isFixed ? 'disabled' : ''} min="0" step="50">
-      <span>Robux</span>
+             min="0" step="50">
+      <select id="reward_type_${r.day_number}">
+        <option value="cash" ${rewardType === 'cash' ? 'selected' : ''}>円</option>
+        <option value="robux" ${rewardType === 'robux' ? 'selected' : ''}>Robux</option>
+      </select>
       <input type="text" id="reward_desc_${r.day_number}" value="${r.reward_description}"
-             placeholder="説明" ${isFixed ? 'disabled' : ''}>
+             placeholder="説明">
     `;
     container.appendChild(row);
   }
@@ -125,10 +129,11 @@ async function unconfirmDay(date) {
 
 async function saveRewards() {
   const rewards = [];
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= 6; i++) {
     rewards.push({
       day_number: i,
       reward_amount: parseInt(document.getElementById(`reward_amount_${i}`).value) || 0,
+      reward_type: document.getElementById(`reward_type_${i}`).value,
       reward_description: document.getElementById(`reward_desc_${i}`).value,
     });
   }
@@ -159,6 +164,21 @@ async function saveMonthly() {
     });
     alert('保存しました');
     loadParentData();
+  } catch (err) {
+    alert('保存に失敗しました');
+  }
+}
+
+async function updateChildName() {
+  const name = document.getElementById('childNameInput').value.trim();
+
+  try {
+    await fetch('/api/parent/child-name', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    alert('保存しました');
   } catch (err) {
     alert('保存に失敗しました');
   }

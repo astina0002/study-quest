@@ -55,9 +55,11 @@ router.get('/week', (req, res) => {
     // Get reward config
     const rewards = db.prepare('SELECT * FROM reward_config ORDER BY day_number').all();
 
-    // Get quest name
-    const setting = db.prepare("SELECT value FROM settings WHERE key = 'quest_name'").get();
-    const questName = setting ? setting.value : '今日の勉強ミッション';
+    // Get settings
+    const questNameSetting = db.prepare("SELECT value FROM settings WHERE key = 'quest_name'").get();
+    const questName = questNameSetting ? questNameSetting.value : '今日の勉強ミッション';
+    const childNameSetting = db.prepare("SELECT value FROM settings WHERE key = 'child_name'").get();
+    const childName = childNameSetting ? childNameSetting.value : '';
 
     // Build week data
     const dayNames = ['月', '火', '水', '木', '金', '土'];
@@ -83,6 +85,7 @@ router.get('/week', (req, res) => {
       dayOfWeek,
       isSunday: dayOfWeek === 7,
       questName,
+      childName,
       week,
       rewards,
       clearedCount,

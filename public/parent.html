@@ -17,6 +17,15 @@
       <a href="/" class="back-link">&#x2190; 子供ページへ</a>
     </header>
 
+    <!-- Child Name Setting -->
+    <section class="parent-section">
+      <h2>&#x1F9D2; 子供の名前</h2>
+      <div class="input-group">
+        <input type="text" id="childNameInput" placeholder="名前を入力">
+        <button onclick="updateChildName()">保存</button>
+      </div>
+    </section>
+
     <!-- Quest Name Setting -->
     <section class="parent-section">
       <h2>&#x270F;&#xFE0F; クエスト名</h2>
@@ -34,8 +43,8 @@
 
     <!-- Reward Config (Days 1-4) -->
     <section class="parent-section">
-      <h2>&#x1F381; リワード設定（1〜4日目）</h2>
-      <p class="note">※ 5日目（800 Robux）と6日目（2000 Robux）は固定です</p>
+      <h2>&#x1F381; リワード設定</h2>
+      <p class="note">※ 各日の達成ボーナスを設定できます（種類: 現金 or Robux）</p>
       <div id="rewardConfig"></div>
       <button class="save-btn" onclick="saveRewards()">リワード保存</button>
     </section>

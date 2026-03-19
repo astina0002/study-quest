@@ -47,9 +47,15 @@ router.get('/week', (req, res) => {
     });
 
     const rewards = db.prepare('SELECT * FROM reward_config ORDER BY day_number').all();
-    const setting = db.prepare("SELECT value FROM settings WHERE key = 'quest_name'").get();
+    const questNameSetting = db.prepare("SELECT value FROM settings WHERE key = 'quest_name'").get();
+    const childNameSetting = db.prepare("SELECT value FROM settings WHERE key = 'child_name'").get();
 
-    res.json({ week, rewards, questName: setting ? setting.value : '今日の勉強ミッション' });
+    res.json({
+      week,
+      rewards,
+      questName: questNameSetting ? questNameSetting.value : '今日の勉強ミッション',
+      childName: childNameSetting ? childNameSetting.value : '',
+    });
   } finally {
     db.close();
   }
@@ -97,7 +103,7 @@ router.post('/unconfirm', (req, res) => {
   }
 });
 
-// PUT /api/parent/rewards - Update reward config (days 1-4 only, 5-6 are fixed)
+// PUT /api/parent/rewards - Update reward config (all days)
 router.put('/rewards', (req, res) => {
   const db = getDb();
   try {
@@ -105,13 +111,11 @@ router.put('/rewards', (req, res) => {
     if (!Array.isArray(rewards)) return res.status(400).json({ error: 'invalid rewards' });
 
     const update = db.prepare(
-      'UPDATE reward_config SET reward_amount = ?, reward_description = ? WHERE day_number = ?'
+      'UPDATE reward_config SET reward_amount = ?, reward_type = ?, reward_description = ? WHERE day_number = ?'
     );
 
     for (const r of rewards) {
-      // Days 5-6 are fixed
-      if (r.day_number >= 5) continue;
-      update.run(r.reward_amount, r.reward_description || '', r.day_number);
+      update.run(r.reward_amount, r.reward_type || 'cash', r.reward_description || '', r.day_number);
     }
 
     res.json({ success: true });
@@ -186,6 +190,18 @@ router.put('/quest-name', (req, res) => {
     if (!name) return res.status(400).json({ error: 'name is required' });
 
     db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('quest_name', ?)").run(name);
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+// PUT /api/parent/child-name - Update child name
+router.put('/child-name', (req, res) => {
+  const db = getDb();
+  try {
+    const { name } = req.body;
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('child_name', ?)").run(name || '');
     res.json({ success: true });
   } finally {
     db.close();

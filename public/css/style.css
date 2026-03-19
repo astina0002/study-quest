@@ -72,6 +72,19 @@ body {
   font-size: 16px;
 }
 
+.child-name {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--cleared);
+  letter-spacing: 2px;
+}
+
+.reward-cash-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
 /* Sunday Screen */
 .sunday-screen {
   text-align: center;
