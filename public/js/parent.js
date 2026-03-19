@@ -65,19 +65,35 @@ function renderRewardConfig(rewards) {
     row.className = 'reward-config-row';
 
     const rewardType = r.reward_type || 'cash';
+    const isItem = rewardType === 'item';
 
     row.innerHTML = `
       <span class="reward-config-label">${r.day_number}日達成</span>
-      <input type="number" id="reward_amount_${r.day_number}" value="${r.reward_amount}"
-             min="0" step="50">
-      <select id="reward_type_${r.day_number}">
-        <option value="cash" ${rewardType === 'cash' ? 'selected' : ''}>円</option>
+      <select id="reward_type_${r.day_number}" onchange="toggleRewardFields(${r.day_number})">
+        <option value="cash" ${rewardType === 'cash' ? 'selected' : ''}>現金 (円)</option>
         <option value="robux" ${rewardType === 'robux' ? 'selected' : ''}>Robux</option>
+        <option value="item" ${rewardType === 'item' ? 'selected' : ''}>アイテム</option>
       </select>
+      <input type="number" id="reward_amount_${r.day_number}" value="${r.reward_amount}"
+             min="0" step="50" class="${isItem ? 'hidden' : ''}" placeholder="金額">
       <input type="text" id="reward_desc_${r.day_number}" value="${r.reward_description}"
-             placeholder="説明">
+             placeholder="${isItem ? 'アイテム名を入力' : '説明'}">
     `;
     container.appendChild(row);
+  }
+}
+
+function toggleRewardFields(dayNumber) {
+  const type = document.getElementById(`reward_type_${dayNumber}`).value;
+  const amountInput = document.getElementById(`reward_amount_${dayNumber}`);
+  const descInput = document.getElementById(`reward_desc_${dayNumber}`);
+
+  if (type === 'item') {
+    amountInput.classList.add('hidden');
+    descInput.placeholder = 'アイテム名を入力';
+  } else {
+    amountInput.classList.remove('hidden');
+    descInput.placeholder = '説明';
   }
 }
 

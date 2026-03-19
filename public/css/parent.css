@@ -2,6 +2,10 @@
   background: #0d0d35;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .parent-header {
   display: flex;
   justify-content: space-between;

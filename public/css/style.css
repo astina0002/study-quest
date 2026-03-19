@@ -80,7 +80,7 @@ body {
   letter-spacing: 2px;
 }
 
-.reward-cash-icon {
+.reward-cash-icon, .reward-item-icon {
   font-size: 32px;
   margin-bottom: 8px;
 }

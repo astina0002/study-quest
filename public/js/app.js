@@ -110,19 +110,30 @@ function renderRewards() {
     card.classList.add(unlocked ? 'unlocked' : 'locked');
 
     const isBig = reward.day_number >= 5;
-    const isRobux = reward.reward_type === 'robux';
-    const unit = isRobux ? 'Robux' : '円';
-    const robuxImage = reward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg';
-    const rewardImg = isRobux
-      ? `<img src="${robuxImage}" alt="Robux" class="reward-image" onerror="this.style.display='none'">`
-      : '<div class="reward-cash-icon">&#x1F4B0;</div>';
+    const rType = reward.reward_type || 'cash';
+    let rewardImg, amountText, unitText;
+
+    if (rType === 'robux') {
+      const robuxImage = reward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg';
+      rewardImg = `<img src="${robuxImage}" alt="Robux" class="reward-image" onerror="this.style.display='none'">`;
+      amountText = reward.reward_amount.toLocaleString();
+      unitText = 'Robux';
+    } else if (rType === 'item') {
+      rewardImg = '<div class="reward-item-icon">&#x1F381;</div>';
+      amountText = '';
+      unitText = reward.reward_description || 'アイテム';
+    } else {
+      rewardImg = '<div class="reward-cash-icon">&#x1F4B0;</div>';
+      amountText = reward.reward_amount.toLocaleString();
+      unitText = '円';
+    }
 
     card.innerHTML = `
       <div class="reward-day">${reward.day_number}日達成</div>
-      <div class="reward-icon">${unlocked ? '&#x1F381;' : '&#x1F512;'}</div>
+      <div class="reward-icon">${unlocked ? '&#x2728;' : '&#x1F512;'}</div>
       ${rewardImg}
-      <div class="reward-amount ${isBig ? 'big' : ''}">${reward.reward_amount.toLocaleString()}</div>
-      <div class="reward-label">${unit}</div>
+      ${amountText ? `<div class="reward-amount ${isBig ? 'big' : ''}">${amountText}</div>` : ''}
+      <div class="reward-label">${unitText}</div>
     `;
     track.appendChild(card);
   }
