@@ -1,5 +1,5 @@
 .parent-body {
-  background: #0d0d35;
+  background: #ede9fe;
 }
 
 .hidden {
@@ -25,6 +25,7 @@
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
 }
 
 .parent-section h2 {
@@ -48,9 +49,9 @@
 .input-group input {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid var(--bg-card-light);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: var(--bg);
+  background: #faf5ff;
   color: var(--text);
   font-size: 16px;
 }
@@ -85,7 +86,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--bg);
+  background: #faf5ff;
   border-radius: 10px;
   gap: 12px;
 }
@@ -114,17 +115,17 @@
 }
 
 .status-badge.cleared {
-  background: rgba(0, 184, 148, 0.2);
-  color: var(--success);
+  background: #ecfdf5;
+  color: #059669;
 }
 
 .status-badge.child-done {
-  background: rgba(255, 234, 167, 0.2);
-  color: var(--waiting);
+  background: #fffbeb;
+  color: #d97706;
 }
 
 .status-badge.pending {
-  background: rgba(136, 136, 136, 0.2);
+  background: #f3f4f6;
   color: var(--text-dim);
 }
 
@@ -175,18 +176,18 @@
 .reward-config-row input[type="number"] {
   width: 100px;
   padding: 8px 12px;
-  border: 2px solid var(--bg-card-light);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: var(--bg);
+  background: #faf5ff;
   color: var(--text);
   font-size: 16px;
 }
 
 .reward-config-row select {
   padding: 8px 12px;
-  border: 2px solid var(--bg-card-light);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: var(--bg);
+  background: #faf5ff;
   color: var(--text);
   font-size: 14px;
 }
@@ -194,9 +195,9 @@
 .reward-config-row input[type="text"] {
   flex: 1;
   padding: 8px 12px;
-  border: 2px solid var(--bg-card-light);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: var(--bg);
+  background: #faf5ff;
   color: var(--text);
   font-size: 14px;
 }
@@ -215,9 +216,9 @@
 
 .monthly-config input, .monthly-config textarea {
   padding: 12px;
-  border: 2px solid var(--bg-card-light);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: var(--bg);
+  background: #faf5ff;
   color: var(--text);
   font-size: 16px;
   width: 100%;
@@ -230,10 +231,10 @@
 
 .monthly-stats {
   padding: 12px;
-  background: var(--bg);
+  background: #faf5ff;
   border-radius: 8px;
   text-align: center;
-  color: var(--primary-light);
+  color: var(--primary);
 }
 
 /* Parent Wishlist */
@@ -248,7 +249,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--bg);
+  background: #faf5ff;
   border-radius: 10px;
   gap: 12px;
 }
