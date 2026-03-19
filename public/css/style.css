@@ -301,9 +301,10 @@ body {
 }
 
 .current-reward-body .reward-image {
-  width: 64px;
-  height: 64px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
+  border-radius: 8px;
 }
 
 .current-reward-body .reward-cash-icon,
@@ -344,6 +345,19 @@ body {
   color: var(--text);
 }
 
+.next-target-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.next-target-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 .next-target-reward {
   font-size: 16px;
   font-weight: bold;
@@ -370,10 +384,24 @@ body {
 .reward-card {
   background: var(--bg-card);
   border-radius: 12px;
-  padding: 10px 6px;
+  padding: 12px 6px;
   text-align: center;
   border: 2px solid var(--bg-card-light);
   transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.06);
+}
+
+.reward-card .reward-image {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  margin: 4px auto;
+}
+
+.reward-card .reward-cash-icon,
+.reward-card .reward-item-icon {
+  font-size: 28px;
+  margin: 4px 0;
 }
 
 .reward-card.earned {
@@ -645,8 +673,13 @@ body {
   }
 
   .current-reward-body .reward-image {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .reward-card .reward-image {
+    width: 52px;
+    height: 52px;
   }
 
   .current-reward-amount {

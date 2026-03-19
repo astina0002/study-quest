@@ -163,9 +163,15 @@ function renderRewards() {
     const d = getRewardDisplay(nextReward);
     const remaining = nextReward.day_number - clearedCount;
     nextSection.classList.remove('hidden');
+    const nextImg = (nextReward.reward_type === 'robux')
+      ? `<img src="${nextReward.reward_amount >= 2000 ? '/images/robux_2000.jpg' : '/images/robux_800.jpg'}" class="next-target-img" onerror="this.style.display='none'">`
+      : '';
     nextEl.innerHTML = `
       <span class="next-target-label">&#x1F3AF; 次の報酬まであと <strong>${remaining}日</strong></span>
-      <span class="next-target-reward">${d.amount ? d.amount + ' ' : ''}${d.unit}</span>
+      <div class="next-target-right">
+        ${nextImg}
+        <span class="next-target-reward">${d.amount ? d.amount + ' ' : ''}${d.unit}</span>
+      </div>
     `;
   } else {
     nextSection.classList.add('hidden');
@@ -188,6 +194,7 @@ function renderRewards() {
     card.innerHTML = `
       <div class="reward-day">${reward.day_number}日達成</div>
       <div class="reward-status">${unlocked ? '&#x2705;' : isNext ? '&#x1F3AF;' : '&#x1F512;'}</div>
+      ${d.img}
       ${d.amount ? `<div class="reward-amount-sm">${d.amount}</div>` : ''}
       <div class="reward-label">${d.unit}</div>
     `;
