@@ -77,6 +77,9 @@ function initDb() {
   db.prepare(
     "INSERT OR IGNORE INTO settings (key, value) VALUES ('monthly_target', '20')"
   ).run();
+  db.prepare(
+    "INSERT OR IGNORE INTO settings (key, value) VALUES ('parent_password', '1234')"
+  ).run();
 
   db.close();
 }

@@ -4,6 +4,13 @@ async function loadParentData() {
       fetch('/api/parent/week'),
       fetch('/api/parent/monthly'),
     ]);
+
+    // Session expired check
+    if (weekRes.status === 401 || monthlyRes.status === 401) {
+      window.location.href = '/parent';
+      return;
+    }
+
     const weekData = await weekRes.json();
     const monthlyData = await monthlyRes.json();
 
@@ -262,6 +269,32 @@ async function updateQuestName() {
     alert('保存しました');
   } catch (err) {
     alert('保存に失敗しました');
+  }
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = '/parent';
+}
+
+async function changePassword() {
+  const pw = document.getElementById('newPassword').value;
+  if (!pw) return alert('新しいパスワードを入力してください');
+
+  try {
+    const res = await fetch('/api/parent/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    });
+    if (res.ok) {
+      alert('パスワードを変更しました');
+      document.getElementById('newPassword').value = '';
+    } else {
+      alert('変更に失敗しました');
+    }
+  } catch (err) {
+    alert('通信エラーが発生しました');
   }
 }
 

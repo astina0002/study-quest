@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>保護者ログイン - Study Quest</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+    }
+    .login-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
+      text-align: center;
+    }
+    .login-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .login-card h2 {
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .login-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: #faf5ff;
+      color: var(--text);
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 8px;
+      margin-bottom: 16px;
+    }
+    .login-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .login-btn:active {
+      transform: scale(0.98);
+    }
+    .login-error {
+      color: #dc2626;
+      margin-top: 12px;
+      font-size: 14px;
+      min-height: 20px;
+    }
+    .back-link {
+      display: block;
+      margin-top: 20px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-icon">&#x1F512;</div>
+        <h2>保護者ページ</h2>
+        <form onsubmit="login(event)">
+          <input type="password" id="password" class="login-input"
+                 placeholder="****" inputmode="numeric" autocomplete="off" autofocus>
+          <button type="submit" class="login-btn">ログイン</button>
+        </form>
+        <div class="login-error" id="error"></div>
+        <a href="/" class="back-link">&#x2190; 戻る</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function login(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('error');
+      errorEl.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = '/parent';
+        } else {
+          errorEl.textContent = data.error || 'パスワードが違います';
+          document.getElementById('password').value = '';
+        }
+      } catch (err) {
+        errorEl.textContent = '通信エラーが発生しました';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -220,4 +220,18 @@ router.put('/child-name', (req, res) => {
   }
 });
 
+// PUT /api/parent/password - Change parent password
+router.put('/password', (req, res) => {
+  const db = getDb();
+  try {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: 'password is required' });
+
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('parent_password', ?)").run(password);
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
 module.exports = router;
