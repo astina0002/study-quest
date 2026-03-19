@@ -124,17 +124,12 @@ router.put('/rewards', (req, res) => {
   }
 });
 
-// GET /api/parent/monthly - Get monthly reward config
+// GET /api/parent/monthly - Get monthly progress + wishlist
 router.get('/monthly', (req, res) => {
   const db = getDb();
   try {
     const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
     const month = now.toISOString().slice(0, 7);
-
-    let monthly = db.prepare('SELECT * FROM monthly_rewards WHERE month = ?').get(month);
-    if (!monthly) {
-      monthly = { month, reward_description: '', reward_amount: 0, achieved: 0 };
-    }
 
     const monthStart = month + '-01';
     const nextMonth = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
@@ -148,34 +143,51 @@ router.get('/monthly', (req, res) => {
       )
       .get(monthStart, nextMonth);
 
-    res.json({ ...monthly, clearedDays: result.count });
+    const targetSetting = db.prepare("SELECT value FROM settings WHERE key = 'monthly_target'").get();
+    const target = targetSetting ? parseInt(targetSetting.value) : 20;
+
+    const wishlist = db.prepare('SELECT * FROM wishlist WHERE granted = 0 ORDER BY created_at DESC').all();
+    const grantedThisMonth = db.prepare('SELECT * FROM wishlist WHERE granted = 1 AND granted_month = ? ORDER BY created_at DESC').all(month);
+
+    res.json({ month, clearedDays: result.count, target, wishlist, grantedThisMonth });
   } finally {
     db.close();
   }
 });
 
-// PUT /api/parent/monthly - Update monthly reward
-router.put('/monthly', (req, res) => {
+// PUT /api/parent/monthly-target - Update monthly target days
+router.put('/monthly-target', (req, res) => {
   const db = getDb();
   try {
-    const { month, reward_description, reward_amount, achieved } = req.body;
-    const m = month || new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 7);
+    const { target } = req.body;
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('monthly_target', ?)").run(String(target || 20));
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
 
-    db.prepare(
-      `INSERT INTO monthly_rewards (month, reward_description, reward_amount, achieved)
-       VALUES (?, ?, ?, ?)
-       ON CONFLICT(month) DO UPDATE SET
-         reward_description = ?, reward_amount = ?, achieved = ?`
-    ).run(
-      m,
-      reward_description || '',
-      reward_amount || 0,
-      achieved ? 1 : 0,
-      reward_description || '',
-      reward_amount || 0,
-      achieved ? 1 : 0
-    );
+// POST /api/parent/wishlist/:id/grant - Grant a wish item
+router.post('/wishlist/:id/grant', (req, res) => {
+  const db = getDb();
+  try {
+    const { id } = req.params;
+    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const month = now.toISOString().slice(0, 7);
 
+    db.prepare('UPDATE wishlist SET granted = 1, granted_month = ? WHERE id = ?').run(month, id);
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+// DELETE /api/parent/wishlist/:id - Parent deletes a wish item
+router.delete('/wishlist/:id', (req, res) => {
+  const db = getDb();
+  try {
+    const { id } = req.params;
+    db.prepare('DELETE FROM wishlist WHERE id = ?').run(id);
     res.json({ success: true });
   } finally {
     db.close();

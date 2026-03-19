@@ -132,23 +132,87 @@ async function loadMonthly() {
   try {
     const res = await fetch('/api/quest/monthly');
     const data = await res.json();
-    const card = document.getElementById('monthlyCard');
 
-    if (!data.reward_description && !data.reward_amount) {
-      document.getElementById('monthlySection').classList.add('hidden');
-      return;
+    // Monthly progress
+    const progressCard = document.getElementById('monthlyProgress');
+    const pct = Math.min(100, Math.round((data.clearedDays / data.target) * 100));
+    progressCard.innerHTML = `
+      <div class="monthly-target-info">
+        <span>目標: <strong>${data.target}日</strong>達成で欲しいものゲット！</span>
+        <span class="monthly-count">${data.clearedDays} / ${data.target} 日</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill monthly-fill ${data.achieved ? 'achieved' : ''}" style="width: ${pct}%"></div>
+      </div>
+      ${data.achieved ? '<div class="monthly-achieved">&#x1F389; 目標達成！おめでとう！欲しいものをリクエストしよう！</div>' : ''}
+    `;
+
+    // Wishlist
+    const wishlistEl = document.getElementById('wishlistItems');
+    if (data.wishlist.length === 0) {
+      wishlistEl.innerHTML = '<div class="wishlist-empty">欲しいものを追加してみよう！</div>';
+    } else {
+      wishlistEl.innerHTML = data.wishlist.map(item => `
+        <div class="wishlist-item">
+          <span class="wish-text">${escapeHtml(item.description)}</span>
+          <button class="wish-delete" onclick="deleteWish(${item.id})">&#x2716;</button>
+        </div>
+      `).join('');
     }
 
-    document.getElementById('monthlySection').classList.remove('hidden');
-    card.innerHTML = `
-      <div class="monthly-progress">今月のクリア日数: <strong>${data.clearedDays}日</strong></div>
-      ${data.reward_amount ? `<div class="monthly-amount">${data.reward_amount.toLocaleString()} Robux</div>` : ''}
-      ${data.reward_description ? `<div class="monthly-reward-text">${data.reward_description}</div>` : ''}
-      ${data.achieved ? '<div style="margin-top:12px;font-size:24px;">&#x1F389; 達成済み！</div>' : ''}
-    `;
+    // Granted this month
+    const grantedEl = document.getElementById('grantedItems');
+    if (data.grantedThisMonth.length > 0) {
+      grantedEl.innerHTML = '<div class="granted-title">&#x1F381; 今月もらったもの</div>' +
+        data.grantedThisMonth.map(item => `
+          <div class="granted-item">
+            <span>&#x2728; ${escapeHtml(item.description)}</span>
+          </div>
+        `).join('');
+    } else {
+      grantedEl.innerHTML = '';
+    }
   } catch (err) {
     console.error('Failed to load monthly:', err);
   }
+}
+
+async function addWish() {
+  const input = document.getElementById('wishInput');
+  const description = input.value.trim();
+  if (!description) return;
+
+  try {
+    const res = await fetch('/api/quest/wishlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      input.value = '';
+      loadMonthly();
+    } else {
+      alert(data.error || 'エラーが発生しました');
+    }
+  } catch (err) {
+    alert('通信エラーが発生しました');
+  }
+}
+
+async function deleteWish(id) {
+  try {
+    await fetch(`/api/quest/wishlist/${id}`, { method: 'DELETE' });
+    loadMonthly();
+  } catch (err) {
+    alert('通信エラーが発生しました');
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 async function completeQuest() {

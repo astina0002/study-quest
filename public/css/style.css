@@ -317,31 +317,128 @@ body {
 }
 
 /* Monthly Section */
-.monthly-card {
-  background: linear-gradient(135deg, var(--bg-card), var(--bg-card-light));
-  border: 2px solid var(--primary);
+.monthly-section {
+  margin-bottom: 32px;
+}
+
+.monthly-progress-card {
+  background: var(--bg-card);
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.monthly-target-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.monthly-count {
+  font-weight: bold;
+  color: var(--primary-light);
+}
+
+.monthly-fill.achieved {
+  background: linear-gradient(90deg, var(--success), var(--accent));
+}
+
+.monthly-achieved {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--success);
   text-align: center;
 }
 
-.monthly-progress {
+/* Wishlist */
+.wishlist-title {
+  font-size: 18px;
+  color: var(--primary-light);
+  margin-bottom: 12px;
+}
+
+.wishlist-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.wishlist-input input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--bg-card-light);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 16px;
+}
+
+.wishlist-input button {
+  padding: 12px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
   font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.wishlist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wishlist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.wish-text {
+  font-size: 16px;
+  flex: 1;
+}
+
+.wish-delete {
+  background: none;
+  border: none;
   color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.wishlist-empty {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 20px;
+  font-size: 14px;
+}
+
+.granted-title {
+  font-size: 16px;
+  color: var(--accent);
+  margin-top: 20px;
   margin-bottom: 8px;
 }
 
-.monthly-reward-text {
-  font-size: 20px;
+.granted-item {
+  padding: 12px 16px;
+  background: rgba(253, 203, 110, 0.1);
+  border-radius: 12px;
+  border-left: 4px solid var(--accent);
+  margin-bottom: 8px;
   color: var(--accent);
-  font-weight: bold;
-}
-
-.monthly-amount {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--accent);
-  margin: 8px 0;
 }
 
 /* Clear Overlay */

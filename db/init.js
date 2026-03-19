@@ -30,12 +30,12 @@ function initDb() {
       reward_description TEXT DEFAULT ''
     );
 
-    CREATE TABLE IF NOT EXISTS monthly_rewards (
+    CREATE TABLE IF NOT EXISTS wishlist (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      month TEXT NOT NULL UNIQUE,
-      reward_description TEXT DEFAULT '',
-      reward_amount INTEGER DEFAULT 0,
-      achieved INTEGER DEFAULT 0
+      description TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      granted INTEGER DEFAULT 0,
+      granted_month TEXT
     );
 
     CREATE TABLE IF NOT EXISTS settings (
@@ -73,6 +73,9 @@ function initDb() {
   ).run();
   db.prepare(
     "INSERT OR IGNORE INTO settings (key, value) VALUES ('child_name', '')"
+  ).run();
+  db.prepare(
+    "INSERT OR IGNORE INTO settings (key, value) VALUES ('monthly_target', '20')"
   ).run();
 
   db.close();

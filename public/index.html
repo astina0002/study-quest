@@ -67,10 +67,18 @@
         <div class="reward-track" id="rewardTrack"></div>
       </div>
 
-      <!-- Monthly Reward -->
-      <div class="monthly-section" id="monthlySection">
-        <h2 class="section-title">&#x1F31F; 月間ボーナス</h2>
-        <div class="monthly-card" id="monthlyCard"></div>
+      <!-- Monthly Progress & Wishlist -->
+      <div class="monthly-section">
+        <h2 class="section-title">&#x1F31F; 月間チャレンジ</h2>
+        <div class="monthly-progress-card" id="monthlyProgress"></div>
+
+        <h3 class="wishlist-title">&#x1F4DD; 欲しいものリスト</h3>
+        <div class="wishlist-input">
+          <input type="text" id="wishInput" placeholder="欲しいものを入力..." maxlength="100">
+          <button onclick="addWish()">追加</button>
+        </div>
+        <div class="wishlist-items" id="wishlistItems"></div>
+        <div class="granted-items" id="grantedItems"></div>
       </div>
     </div>
 

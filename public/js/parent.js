@@ -86,19 +86,46 @@ function renderMonthlyConfig(data) {
   container.innerHTML = `
     <div class="monthly-config">
       <div class="monthly-stats">
-        今月のクリア日数: <strong>${data.clearedDays}日</strong>
+        今月のクリア日数: <strong>${data.clearedDays}日</strong> / 目標 ${data.target}日
+        ${data.clearedDays >= data.target ? ' &#x1F389; 達成！' : ''}
       </div>
-      <label>報酬説明</label>
-      <textarea id="monthlyDesc" placeholder="例: ロブロックスのアイテム">${data.reward_description || ''}</textarea>
-      <label>報酬額 (Robux)</label>
-      <input type="number" id="monthlyAmount" value="${data.reward_amount || 0}" min="0" step="100">
-      <div class="achieved-toggle">
-        <input type="checkbox" id="monthlyAchieved" ${data.achieved ? 'checked' : ''}>
-        <label for="monthlyAchieved">達成済み</label>
+      <label>月間目標日数</label>
+      <div class="input-group">
+        <input type="number" id="monthlyTarget" value="${data.target}" min="1" max="26" step="1">
+        <button onclick="saveMonthlyTarget()">保存</button>
       </div>
-      <button class="save-btn" onclick="saveMonthly()">月間ボーナス保存</button>
     </div>
   `;
+
+  // Wishlist management
+  const wishEl = document.getElementById('wishlistManage');
+  let html = '';
+
+  if (data.wishlist.length === 0) {
+    html += '<p class="note">子供がまだ欲しいものを追加していません</p>';
+  } else {
+    html += '<div class="parent-wishlist">';
+    for (const item of data.wishlist) {
+      html += `
+        <div class="parent-wish-row">
+          <span class="wish-text">${escapeHtml(item.description)}</span>
+          <div class="wish-actions">
+            <button class="confirm-btn confirm" onclick="grantWish(${item.id})">プレゼント</button>
+            <button class="confirm-btn undo" onclick="deleteWish(${item.id})">削除</button>
+          </div>
+        </div>`;
+    }
+    html += '</div>';
+  }
+
+  if (data.grantedThisMonth.length > 0) {
+    html += '<div class="granted-title" style="margin-top:16px;">&#x1F381; 今月プレゼント済み</div>';
+    for (const item of data.grantedThisMonth) {
+      html += `<div class="granted-item">${escapeHtml(item.description)}</div>`;
+    }
+  }
+
+  wishEl.innerHTML = html;
 }
 
 async function confirmDay(date) {
@@ -151,22 +178,44 @@ async function saveRewards() {
   }
 }
 
-async function saveMonthly() {
+async function saveMonthlyTarget() {
   try {
-    await fetch('/api/parent/monthly', {
+    await fetch('/api/parent/monthly-target', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reward_description: document.getElementById('monthlyDesc').value,
-        reward_amount: parseInt(document.getElementById('monthlyAmount').value) || 0,
-        achieved: document.getElementById('monthlyAchieved').checked,
-      }),
+      body: JSON.stringify({ target: parseInt(document.getElementById('monthlyTarget').value) || 20 }),
     });
     alert('保存しました');
     loadParentData();
   } catch (err) {
     alert('保存に失敗しました');
   }
+}
+
+async function grantWish(id) {
+  if (!confirm('このアイテムをプレゼント済みにしますか？')) return;
+  try {
+    await fetch(`/api/parent/wishlist/${id}/grant`, { method: 'POST' });
+    loadParentData();
+  } catch (err) {
+    alert('エラーが発生しました');
+  }
+}
+
+async function deleteWish(id) {
+  if (!confirm('このアイテムを削除しますか？')) return;
+  try {
+    await fetch(`/api/parent/wishlist/${id}`, { method: 'DELETE' });
+    loadParentData();
+  } catch (err) {
+    alert('エラーが発生しました');
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 async function updateChildName() {

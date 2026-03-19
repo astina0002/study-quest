@@ -120,19 +120,13 @@ router.post('/complete', (req, res) => {
   }
 });
 
-// GET /api/quest/monthly - Get monthly reward info
+// GET /api/quest/monthly - Get monthly progress + wishlist
 router.get('/monthly', (req, res) => {
   const db = getDb();
   try {
     const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
     const month = now.toISOString().slice(0, 7);
 
-    let monthly = db.prepare('SELECT * FROM monthly_rewards WHERE month = ?').get(month);
-    if (!monthly) {
-      monthly = { month, reward_description: '', reward_amount: 0, achieved: 0 };
-    }
-
-    // Count total cleared days this month
     const monthStart = month + '-01';
     const nextMonth = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
       .toISOString()
@@ -145,11 +139,49 @@ router.get('/monthly', (req, res) => {
       )
       .get(monthStart, nextMonth);
 
+    const targetSetting = db.prepare("SELECT value FROM settings WHERE key = 'monthly_target'").get();
+    const target = targetSetting ? parseInt(targetSetting.value) : 20;
+
+    const wishlist = db.prepare('SELECT * FROM wishlist WHERE granted = 0 ORDER BY created_at DESC').all();
+    const grantedThisMonth = db.prepare('SELECT * FROM wishlist WHERE granted = 1 AND granted_month = ? ORDER BY created_at DESC').all(month);
+
     res.json({
       month,
-      ...monthly,
       clearedDays: result.count,
+      target,
+      achieved: result.count >= target,
+      wishlist,
+      grantedThisMonth,
     });
+  } finally {
+    db.close();
+  }
+});
+
+// POST /api/quest/wishlist - Child adds a wish item
+router.post('/wishlist', (req, res) => {
+  const db = getDb();
+  try {
+    const { description } = req.body;
+    if (!description || !description.trim()) {
+      return res.status(400).json({ error: '欲しいものを入力してください' });
+    }
+
+    const now = new Date().toISOString();
+    db.prepare('INSERT INTO wishlist (description, created_at) VALUES (?, ?)').run(description.trim(), now);
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+// DELETE /api/quest/wishlist/:id - Child removes a wish item
+router.delete('/wishlist/:id', (req, res) => {
+  const db = getDb();
+  try {
+    const { id } = req.params;
+    db.prepare('DELETE FROM wishlist WHERE id = ? AND granted = 0').run(id);
+    res.json({ success: true });
   } finally {
     db.close();
   }
