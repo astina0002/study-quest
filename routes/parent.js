@@ -1,0 +1,195 @@
+const express = require('express');
+const router = express.Router();
+const { getDb } = require('../db/init');
+
+// GET /api/parent/week - Get week data for parent view
+router.get('/week', (req, res) => {
+  const db = getDb();
+  try {
+    // Get Monday of current week (JST)
+    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const day = now.getUTCDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setUTCDate(monday.getUTCDate() + diff);
+    const mondayStr = monday.toISOString().split('T')[0];
+    const today = now.toISOString().split('T')[0];
+
+    const weekDates = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(monday);
+      d.setDate(d.getDate() + i);
+      weekDates.push(d.toISOString().split('T')[0]);
+    }
+
+    const placeholders = weekDates.map(() => '?').join(',');
+    const quests = db
+      .prepare(`SELECT * FROM daily_quests WHERE date IN (${placeholders})`)
+      .all(...weekDates);
+
+    const questMap = {};
+    for (const q of quests) questMap[q.date] = q;
+
+    const dayNames = ['月', '火', '水', '木', '金', '土'];
+    const week = weekDates.map((date, i) => {
+      const quest = questMap[date] || null;
+      return {
+        date,
+        dayNumber: i + 1,
+        dayName: dayNames[i],
+        isToday: date === today,
+        childCompleted: quest ? !!quest.child_completed : false,
+        childCompletedAt: quest ? quest.child_completed_at : null,
+        parentConfirmed: quest ? !!quest.parent_confirmed : false,
+        parentConfirmedAt: quest ? quest.parent_confirmed_at : null,
+        cleared: quest ? !!(quest.child_completed && quest.parent_confirmed) : false,
+      };
+    });
+
+    const rewards = db.prepare('SELECT * FROM reward_config ORDER BY day_number').all();
+    const setting = db.prepare("SELECT value FROM settings WHERE key = 'quest_name'").get();
+
+    res.json({ week, rewards, questName: setting ? setting.value : '今日の勉強ミッション' });
+  } finally {
+    db.close();
+  }
+});
+
+// POST /api/parent/confirm - Parent confirms a day
+router.post('/confirm', (req, res) => {
+  const db = getDb();
+  try {
+    const { date } = req.body;
+    if (!date) return res.status(400).json({ error: 'date is required' });
+
+    const now = new Date().toISOString();
+
+    // Only confirm if child has completed
+    const quest = db.prepare('SELECT * FROM daily_quests WHERE date = ?').get(date);
+    if (!quest || !quest.child_completed) {
+      return res.status(400).json({ error: 'まだ子供が完了していません' });
+    }
+
+    db.prepare(
+      `UPDATE daily_quests SET parent_confirmed = 1, parent_confirmed_at = ? WHERE date = ?`
+    ).run(now, date);
+
+    res.json({ success: true, date });
+  } finally {
+    db.close();
+  }
+});
+
+// POST /api/parent/unconfirm - Parent removes confirmation
+router.post('/unconfirm', (req, res) => {
+  const db = getDb();
+  try {
+    const { date } = req.body;
+    if (!date) return res.status(400).json({ error: 'date is required' });
+
+    db.prepare(
+      `UPDATE daily_quests SET parent_confirmed = 0, parent_confirmed_at = NULL WHERE date = ?`
+    ).run(date);
+
+    res.json({ success: true, date });
+  } finally {
+    db.close();
+  }
+});
+
+// PUT /api/parent/rewards - Update reward config (days 1-4 only, 5-6 are fixed)
+router.put('/rewards', (req, res) => {
+  const db = getDb();
+  try {
+    const { rewards } = req.body;
+    if (!Array.isArray(rewards)) return res.status(400).json({ error: 'invalid rewards' });
+
+    const update = db.prepare(
+      'UPDATE reward_config SET reward_amount = ?, reward_description = ? WHERE day_number = ?'
+    );
+
+    for (const r of rewards) {
+      // Days 5-6 are fixed
+      if (r.day_number >= 5) continue;
+      update.run(r.reward_amount, r.reward_description || '', r.day_number);
+    }
+
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+// GET /api/parent/monthly - Get monthly reward config
+router.get('/monthly', (req, res) => {
+  const db = getDb();
+  try {
+    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+    const month = now.toISOString().slice(0, 7);
+
+    let monthly = db.prepare('SELECT * FROM monthly_rewards WHERE month = ?').get(month);
+    if (!monthly) {
+      monthly = { month, reward_description: '', reward_amount: 0, achieved: 0 };
+    }
+
+    const monthStart = month + '-01';
+    const nextMonth = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
+      .toISOString()
+      .split('T')[0];
+
+    const result = db
+      .prepare(
+        `SELECT COUNT(*) as count FROM daily_quests
+         WHERE date >= ? AND date < ? AND child_completed = 1 AND parent_confirmed = 1`
+      )
+      .get(monthStart, nextMonth);
+
+    res.json({ ...monthly, clearedDays: result.count });
+  } finally {
+    db.close();
+  }
+});
+
+// PUT /api/parent/monthly - Update monthly reward
+router.put('/monthly', (req, res) => {
+  const db = getDb();
+  try {
+    const { month, reward_description, reward_amount, achieved } = req.body;
+    const m = month || new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 7);
+
+    db.prepare(
+      `INSERT INTO monthly_rewards (month, reward_description, reward_amount, achieved)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(month) DO UPDATE SET
+         reward_description = ?, reward_amount = ?, achieved = ?`
+    ).run(
+      m,
+      reward_description || '',
+      reward_amount || 0,
+      achieved ? 1 : 0,
+      reward_description || '',
+      reward_amount || 0,
+      achieved ? 1 : 0
+    );
+
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+// PUT /api/parent/quest-name - Update quest name
+router.put('/quest-name', (req, res) => {
+  const db = getDb();
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: 'name is required' });
+
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('quest_name', ?)").run(name);
+    res.json({ success: true });
+  } finally {
+    db.close();
+  }
+});
+
+module.exports = router;

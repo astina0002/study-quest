@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Study Quest</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <span class="header-icon">&#x2694;&#xFE0F;</span>
+        <h1>STUDY QUEST</h1>
+      </div>
+      <div class="header-sub" id="questName">今日の勉強ミッション</div>
+    </header>
+
+    <!-- Sunday Rest Screen -->
+    <div id="sundayScreen" class="sunday-screen hidden">
+      <div class="sunday-icon">&#x1F3AE;</div>
+      <h2>日曜日は休息日！</h2>
+      <p>ゆっくり休んで、また月曜日から頑張ろう！</p>
+    </div>
+
+    <!-- Main Quest Board -->
+    <div id="questBoard" class="quest-board">
+      <!-- Week Progress -->
+      <div class="week-progress">
+        <div class="progress-label">
+          <span>今週の進捗</span>
+          <span id="progressText">0 / 6 日クリア</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Daily Quest Cards -->
+      <div class="quest-days" id="questDays"></div>
+
+      <!-- Today's Action -->
+      <div id="todayAction" class="today-action hidden">
+        <button id="completeBtn" class="complete-btn" onclick="completeQuest()">
+          <span class="btn-icon">&#x2694;&#xFE0F;</span>
+          <span class="btn-text">ミッション完了！</span>
+        </button>
+        <p class="action-hint">今日の勉強が終わったらタップしよう</p>
+      </div>
+
+      <div id="waitingParent" class="waiting-parent hidden">
+        <div class="waiting-icon">&#x23F3;</div>
+        <p>親の確認を待っています...</p>
+      </div>
+
+      <div id="todayCleared" class="today-cleared hidden">
+        <div class="cleared-icon">&#x2728;</div>
+        <p>今日のミッションクリア！</p>
+      </div>
+
+      <!-- Weekly Rewards -->
+      <div class="rewards-section">
+        <h2 class="section-title">&#x1F3C6; 週間リワード</h2>
+        <div class="reward-track" id="rewardTrack"></div>
+      </div>
+
+      <!-- Monthly Reward -->
+      <div class="monthly-section" id="monthlySection">
+        <h2 class="section-title">&#x1F31F; 月間ボーナス</h2>
+        <div class="monthly-card" id="monthlyCard"></div>
+      </div>
+    </div>
+
+    <!-- Parent Link -->
+    <div class="parent-link">
+      <a href="/parent">&#x1F512; 保護者ページ</a>
+    </div>
+  </div>
+
+  <!-- Clear Animation Overlay -->
+  <div id="clearOverlay" class="clear-overlay hidden">
+    <div class="clear-content">
+      <div class="clear-stars">&#x2B50;&#x2B50;&#x2B50;</div>
+      <h2>MISSION CLEAR!</h2>
+      <p>おめでとう！すごいね！</p>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

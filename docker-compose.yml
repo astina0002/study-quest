@@ -1,0 +1,15 @@
+services:
+  study-quest:
+    build: .
+    container_name: study-quest
+    ports:
+      - "3000:3000"
+    volumes:
+      - quest-data:/app/data
+    environment:
+      - PORT=3000
+      - TZ=Asia/Tokyo
+    restart: unless-stopped
+
+volumes:
+  quest-data:

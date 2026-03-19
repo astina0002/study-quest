@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Quest - 保護者ページ</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/parent.css">
+</head>
+<body class="parent-body">
+  <div class="app">
+    <header class="header parent-header">
+      <div class="header-title">
+        <span class="header-icon">&#x1F6E1;&#xFE0F;</span>
+        <h1>保護者管理</h1>
+      </div>
+      <a href="/" class="back-link">&#x2190; 子供ページへ</a>
+    </header>
+
+    <!-- Quest Name Setting -->
+    <section class="parent-section">
+      <h2>&#x270F;&#xFE0F; クエスト名</h2>
+      <div class="input-group">
+        <input type="text" id="questNameInput" placeholder="今日の勉強ミッション">
+        <button onclick="updateQuestName()">保存</button>
+      </div>
+    </section>
+
+    <!-- Weekly Status & Confirm -->
+    <section class="parent-section">
+      <h2>&#x1F4C5; 今週の状況</h2>
+      <div class="parent-week" id="parentWeek"></div>
+    </section>
+
+    <!-- Reward Config (Days 1-4) -->
+    <section class="parent-section">
+      <h2>&#x1F381; リワード設定（1〜4日目）</h2>
+      <p class="note">※ 5日目（800 Robux）と6日目（2000 Robux）は固定です</p>
+      <div id="rewardConfig"></div>
+      <button class="save-btn" onclick="saveRewards()">リワード保存</button>
+    </section>
+
+    <!-- Monthly Reward -->
+    <section class="parent-section">
+      <h2>&#x1F31F; 月間ボーナス設定</h2>
+      <div id="monthlyConfig"></div>
+    </section>
+  </div>
+
+  <script src="/js/parent.js"></script>
+</body>
+</html>

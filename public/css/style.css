@@ -1,0 +1,438 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #6c5ce7;
+  --primary-light: #a29bfe;
+  --accent: #fdcb6e;
+  --accent-dark: #e17055;
+  --success: #00b894;
+  --bg: #0a0a2e;
+  --bg-card: #16163a;
+  --bg-card-light: #1e1e4a;
+  --text: #f0f0f0;
+  --text-dim: #888;
+  --cleared: #00cec9;
+  --waiting: #ffeaa7;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 24px 0;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 24px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.header-icon {
+  font-size: 32px;
+}
+
+.header h1 {
+  font-size: 28px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-sub {
+  margin-top: 8px;
+  color: var(--primary-light);
+  font-size: 16px;
+}
+
+/* Sunday Screen */
+.sunday-screen {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.sunday-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.sunday-screen h2 {
+  font-size: 28px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.sunday-screen p {
+  color: var(--text-dim);
+  font-size: 18px;
+}
+
+/* Week Progress */
+.week-progress {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--bg-card-light);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--cleared));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+/* Quest Day Cards */
+.quest-days {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.quest-day {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.quest-day.today {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(253, 203, 110, 0.3);
+}
+
+.quest-day.cleared {
+  border-color: var(--success);
+  background: rgba(0, 184, 148, 0.15);
+}
+
+.quest-day.waiting {
+  border-color: var(--waiting);
+  background: rgba(255, 234, 167, 0.1);
+}
+
+.day-name {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.day-number {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.day-status {
+  font-size: 20px;
+}
+
+/* Today Action */
+.today-action {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.complete-btn {
+  background: linear-gradient(135deg, var(--primary), #e17055);
+  border: none;
+  color: white;
+  padding: 20px 48px;
+  border-radius: 60px;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+}
+
+.complete-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-icon {
+  font-size: 28px;
+}
+
+.action-hint {
+  margin-top: 12px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* Waiting / Cleared States */
+.waiting-parent, .today-cleared {
+  text-align: center;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.waiting-icon, .cleared-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.waiting-parent p {
+  color: var(--waiting);
+  font-size: 18px;
+}
+
+.today-cleared p {
+  color: var(--success);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Rewards Section */
+.rewards-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.reward-track {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.reward-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  border: 2px solid var(--bg-card-light);
+  transition: all 0.3s;
+}
+
+.reward-card.unlocked {
+  border-color: var(--accent);
+  background: rgba(253, 203, 110, 0.1);
+  box-shadow: 0 0 15px rgba(253, 203, 110, 0.2);
+}
+
+.reward-card.locked {
+  opacity: 0.5;
+}
+
+.reward-day {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.reward-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.reward-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.reward-amount.big {
+  font-size: 24px;
+  color: var(--accent-dark);
+}
+
+.reward-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.reward-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* Monthly Section */
+.monthly-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-card-light));
+  border: 2px solid var(--primary);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.monthly-progress {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.monthly-reward-text {
+  font-size: 20px;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.monthly-amount {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--accent);
+  margin: 8px 0;
+}
+
+/* Clear Overlay */
+.clear-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.clear-content {
+  text-align: center;
+  animation: popIn 0.5s ease;
+}
+
+.clear-stars {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.clear-content h2 {
+  font-size: 42px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+}
+
+.clear-content p {
+  font-size: 20px;
+  color: var(--text);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Parent Link */
+.parent-link {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 12px;
+  background: rgba(10, 10, 46, 0.95);
+  border-top: 1px solid var(--bg-card-light);
+}
+
+.parent-link a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Responsive for iPad */
+@media (min-width: 768px) {
+  .app {
+    padding: 24px 32px;
+  }
+
+  .header h1 {
+    font-size: 36px;
+  }
+
+  .quest-days {
+    gap: 12px;
+  }
+
+  .quest-day {
+    padding: 16px 12px;
+  }
+
+  .day-number {
+    font-size: 24px;
+  }
+
+  .reward-track {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .complete-btn {
+    padding: 24px 60px;
+    font-size: 26px;
+  }
+}
